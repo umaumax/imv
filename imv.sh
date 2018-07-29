@@ -51,6 +51,18 @@ nnoremap qq :q<CR>
 nnoremap q! :q!<CR>
 nnoremap ww :w<CR>
 nnoremap wq :wq<CR>
+
+inoremap <C-d> <Delete>
+inoremap <C-f> <BS>
+vnoremap <C-d> <Delete>
+vnoremap <C-f> <BS>
+cnoremap <C-d> <Delete>
+cnoremap <C-f> <BS>
+
+inoremap <C-h> <Left>
+inoremap <C-j> <ESC>:call <SID>Down()<CR>i
+inoremap <C-k> <ESC>:call <SID>Up()<CR>i
+inoremap <C-l> <Right>
 EOF
 
 cmdcheck() { type >/dev/null 2>&1 "$@"; }
