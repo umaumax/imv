@@ -45,6 +45,9 @@ if ! has('nvim')
 	cnoremap <S-Tab> <Down>
 endif
 
+au InsertEnter,VimEnter  * hi StatusLine term=reverse ctermbg=5 gui=undercurl guisp=Magenta | execute "set statusline=INSERT"
+au InsertLeave,VimEnter  * hi StatusLine term=reverse ctermfg=0 ctermbg=2 gui=bold,reverse  | execute "set statusline=NORMAL"
+
 syntax on
 
 nnoremap qq :q<CR>
