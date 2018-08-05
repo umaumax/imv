@@ -71,7 +71,7 @@ EOF
 cmdcheck() { type >/dev/null 2>&1 "$@"; }
 cmdcheck 'nvim' && alias vim='nvim'
 
-vim -u $tmp_vimrc -c "e! $tmpfile" -c "call setline(1, \"$basename\")" -c "start"
+vim -i NONE -u $tmp_vimrc -c "e! $tmpfile" -c "call setline(1, \"$basename\")" -c "start"
 code=$?
 [[ ! -e $tmpfile ]] || [[ $code != 0 ]] && exit 1
 
