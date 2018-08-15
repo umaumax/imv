@@ -2,6 +2,8 @@
 [[ $# -lt 1 ]] && echo "<filepath>" && exit 1
 
 filepath="$1"
+[[ ! -e "$filepath" ]] && echo "$0: $filepath: No such file or directory" && exit 1
+
 basename=${filepath##*/}
 dirpath=$(dirname $filepath)
 
