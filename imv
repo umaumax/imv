@@ -13,6 +13,7 @@ function main() {
 	rm $tmpfile
 	trap "rm -f $tmpfile; exit 1" 1 2 3 15
 
+	shopt -s expand_aliases
 	type >/dev/null 2>&1 'nvim' && alias vim='nvim'
 
 	setup_tmp_vimrc
