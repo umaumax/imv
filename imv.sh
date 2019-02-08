@@ -1,20 +1,9 @@
 #!/usr/bin/env bash
-[[ $# -lt 1 ]] && echo "<filepath>" && exit 1
 
-filepath="$1"
-[[ ! -e "$filepath" ]] && echo "$0: $filepath: No such file or directory" && exit 1
-
-basename=${filepath##*/}
-dirpath=$(dirname $filepath)
-
-tmpfile=$(mktemp)
-rm $tmpfile
-trap "rm -f $tmpfile; exit 1" 1 2 3 15
-
-# echo $filepath |
-tmp_vimrc=$(mktemp)
-trap "rm -f $tmp_vimrc; exit 1" 1 2 3 15
-cat >$tmp_vimrc <<EOF
+setup_tmp_vimrc() {
+	local tmp_vimrc=$(mktemp)
+	trap "rm -f $tmp_vimrc; exit 1" 1 2 3 15
+	cat >$tmp_vimrc <<EOF
 set nocompatible
 set autoindent
 set expandtab
@@ -69,14 +58,30 @@ inoremap <C-j> <ESC>:call <SID>Down()<CR>i
 inoremap <C-k> <ESC>:call <SID>Up()<CR>i
 inoremap <C-l> <Right>
 EOF
+}
 
-cmdcheck() { type >/dev/null 2>&1 "$@"; }
-cmdcheck 'nvim' && alias vim='nvim'
+function main() {
+	[[ $# -lt 1 ]] && echo "<filepath>" && exit 1
 
-vim -i NONE -u $tmp_vimrc -c "e! $tmpfile" -c "call setline(1, \"$basename\")" -c "start"
-code=$?
-[[ ! -e $tmpfile ]] || [[ $code != 0 ]] && exit 1
+	local filepath="$1"
+	[[ ! -e "$filepath" ]] && echo "$0: $filepath: No such file or directory" && exit 1
 
-newfilepath="$dirpath/$(cat $tmpfile)"
-echo mv -i "$filepath" "$newfilepath"
-mv -i "$filepath" "$newfilepath"
+	local target_basename="$(basename "$filepath")"
+	local dirpath="$(dirname "$filepath")"
+
+	local tmpfile=$(mktemp)
+	rm $tmpfile
+	trap "rm -f $tmpfile; exit 1" 1 2 3 15
+
+	type >/dev/null 2>&1 'nvim' && alias vim='nvim'
+
+	setup_tmp_vimrc
+	vim -i NONE -u "$tmp_vimrc" -c "e! $tmpfile" -c "call setline(1, \"$target_basename\")" -c "start"
+	local exit_code=$?
+	[[ ! -e $tmpfile ]] || [[ $exit_code != 0 ]] && exit 1
+
+	local newfilepath="$dirpath/$(cat $tmpfile)"
+	echo mv -i "$filepath" "$newfilepath"
+	mv -i "$filepath" "$newfilepath"
+}
+main "$@"
