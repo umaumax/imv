@@ -16,7 +16,7 @@ function main() {
 	shopt -s expand_aliases
 	type >/dev/null 2>&1 'nvim' && alias vim='nvim'
 
-	setup_tmp_vimrc
+	local tmp_vimrc="$(setup_tmp_vimrc)"
 	vim -i NONE -u "$tmp_vimrc" -c "e! $tmpfile" -c "call setline(1, \"$target_basename\")" -c "start"
 	local exit_code=$?
 	[[ ! -e $tmpfile ]] || [[ $exit_code != 0 ]] && exit 1
@@ -31,7 +31,7 @@ function main() {
 setup_tmp_vimrc() {
 	local tmp_vimrc=$(mktemp)
 	trap "rm -f $tmp_vimrc; exit 1" 1 2 3 15
-	cat >$tmp_vimrc <<EOF
+	cat >$tmp_vimrc <<'EOF'
 set nocompatible
 set autoindent
 set expandtab
@@ -86,6 +86,7 @@ inoremap <C-j> <ESC>:call <SID>Down()<CR>i
 inoremap <C-k> <ESC>:call <SID>Up()<CR>i
 inoremap <C-l> <Right>
 EOF
+	printf '%s' "$tmp_vimrc"
 }
 
 main "$@"
