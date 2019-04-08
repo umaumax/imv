@@ -11,7 +11,7 @@ function main() {
 
 	local tmpfile=$(mktemp)
 	rm $tmpfile
-	trap "rm -f $tmpfile; exit 1" 1 2 3 15
+	trap "[[ -e $tmpfile ]] && rm -f $tmpfile; exit 1" 0 1 2 3 15
 
 	shopt -s expand_aliases
 	type >/dev/null 2>&1 'nvim' && alias vim='nvim'
@@ -30,7 +30,7 @@ function main() {
 
 setup_tmp_vimrc() {
 	local tmp_vimrc=$(mktemp)
-	trap "rm -f $tmp_vimrc; exit 1" 1 2 3 15
+	trap "[[ -e $tmp_vimrc ]] && rm -f $tmp_vimrc; exit 1" 0 1 2 3 15
 	cat >$tmp_vimrc <<'EOF'
 set nocompatible
 set autoindent
@@ -53,8 +53,8 @@ set shortmess+=I
 set laststatus=2
 set encoding=utf-8
 set fileencodings=utf-8,iso-2022-jp,cp932,sjis,euc-jp
-set listchars=tab:»-,trail:-,extends:»,precedes:«,nbsp:%,eol:↲ " 不可視文字を表示
-set wildmenu wildmode=list:full "入力補完機能
+set listchars=tab:»-,trail:-,extends:»,precedes:«,nbsp:%,eol:↲
+set wildmenu wildmode=list:full
 set ambiwidth=double
 
 colorscheme desert
